@@ -38,7 +38,7 @@ io.on("connection", (socket) => {
 
   socket.on("recalculate", () => {
     const query = `
-      SELECT users.id, users.full_name, SUM(activities.points) as total_points
+      SELECT users.id, users.name, SUM(activities.points) as total_points
       FROM users
       LEFT JOIN activities ON users.id = activities.user_id
       GROUP BY users.id
@@ -47,7 +47,10 @@ io.on("connection", (socket) => {
 
     db.query(query, (err, results) => {
       if (!err) {
+        console.log("Leaderboard recalculated:", results);
         io.emit("updateLeaderboard", results);
+      }else {
+        console.error("Error fetching leaderboard data:", err);
       }
     });
   });
